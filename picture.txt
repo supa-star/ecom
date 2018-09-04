@@ -1,0 +1,34 @@
+   //if picture inserted
+            $file= $_FILES['image'];
+            $file_name = $_FILES['image']['name'];
+            $file_tmp_name = $_FILES['image']['tmp_name'];
+            $file_size = $_FILES['image']['size'];
+            $file_error = $_FILES['image']['error'];
+            $file_type = $_FILES['image']['type'];
+
+            $fileExt = explode('.', $file_name);
+            $file_actualExt = strtolower(end($fileExt));
+            $allowed =  array ('jpg','jpeg', 'png','bmp');
+
+            if (in_array($file_actualExt, $allowed)){
+                if($file_error === 0){
+                    if ($file_size < 1000000 ){
+                        $file_new_name = uniqid('',true).".".$file_actualExt;
+                        $file_destination = "uploads/student/".$file_new_name;
+                        move_uploaded_file($file_tmp_name,$file_destination);
+
+                        $add_data = "INSERT INTO `student_profile` (`admissionDate`, `first_name`, `surname`, `admissionNo`, `mobile1`, `mobile2`, `email`, `progID`, `yearID`, `categoryID`, `stream`, `campus_status`,`picture`) VALUES ('$date', '$f_name', '$l_name', '$admission', '$mobile1', '$mobile2', '$email', '$programme', '$year', '$category', '$stream', '$campus','$file_destination')";
+                        $result = $conn->query($add_data);
+                        $error_no = "2";
+                    }else{
+                        //echo"file is to large to upload";
+                        header("location: page.php?page=".$url_page."&box=3&msg=2");
+                    }
+                }else{
+                    //echo"there was an error uploading the file";
+                    header("location: page.php?page=".$url_page."&box=3&msg=6");
+                }
+            }else{
+                //echo"you can nout upload this kind of file";
+                header("location: page.php?page=".$url_page."&box=3&msg=7");
+            }
